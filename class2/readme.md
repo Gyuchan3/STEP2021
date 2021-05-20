@@ -48,5 +48,6 @@ $ python matrix-graph.py N
 
 
 双方向リスト操作のイメージ
+
 ![構造のイメージ](cache_image.png)
     
