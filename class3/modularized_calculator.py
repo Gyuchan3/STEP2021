@@ -88,7 +88,7 @@ def calc_mul_divide(tokens): # calculate '*' and '/'
     else:
       index += 1
 
-def process_braket(tokens):
+def process_brackets(tokens):
   index = 0
   inside_braket = []
   flag_bra = 0
@@ -116,7 +116,7 @@ def process_braket(tokens):
 def evaluate(tokens):
   answer = 0
   tokens.insert(0, {'type': 'PLUS'}) # Insert a dummy '+' token
-  tokens = process_braket(tokens)
+  tokens = process_brackets(tokens)
   calc_mul_divide(tokens)
   index = 1
   while index < len(tokens):
@@ -157,6 +157,7 @@ def run_test():
   test("(1+2)")
   test("3*(1+2)")
   test("3.0/(2.0+1)")
+  #test("(1)+(2)")
   # test("3*(1+1)+4/(3-1)") # :(
   # test("(3+4*(3-2))/5") # :(
   print("==== Test finished! ====\n")
