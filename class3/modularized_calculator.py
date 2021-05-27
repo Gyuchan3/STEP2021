@@ -32,13 +32,13 @@ def read_divide(line, index):
   token = {'type': 'DIVIDE'}
   return token, index + 1
 
-# def read_bra(line, index):
-#   token = {'type': 'BRA'}
-#   return token, index + 1
+def read_bra(line, index):
+  token = {'type': 'BRA'}
+  return token, index + 1
 
-# def read_ket(line, index):
-#   token = {'type': 'KET'}
-#   return token, index + 1
+def read_ket(line, index):
+  token = {'type': 'KET'}
+  return token, index + 1
 
 
 def tokenize(line):
@@ -55,10 +55,10 @@ def tokenize(line):
       (token, index) = read_mul(line, index)
     elif line[index] == '/':
       (token, index) = read_divide(line, index)
-    # elif line[index] == '(':
-    #   (token, index) = read_bra(line, index)
-    # elif line[index] == ')':
-    #   (token, index) = read_ket(line, index)
+    elif line[index] == '(':
+      (token, index) = read_bra(line, index)
+    elif line[index] == ')':
+      (token, index) = read_ket(line, index)
     else:
       print('Invalid character found: ' + line[index])
       exit(1)
@@ -88,10 +88,35 @@ def calc_mul_divide(tokens): # calculate '*' and '/'
     else:
       index += 1
 
+def process_braket(tokens):
+  index = 0
+  inside_braket = []
+  flag_bra = 0
+  no_braket_tokens = []
+  while index < len(tokens):
+    if tokens[index]['type'] == 'BRA':
+      index += 1
+      flag_bra += 1
+      while tokens[index]['type'] != 'KET':
+        inside_braket.append(tokens[index])
+        index += 1
+      ans_in_bra = evaluate(inside_braket)
+      tmp = 0
+      ans_token, hoge = read_number(str(ans_in_bra), tmp)
+      no_braket_tokens.append(ans_token)
+      index += 1
+      flag_bra -= 1
 
+    else:
+      no_braket_tokens.append(tokens[index])
+      index += 1
+  
+  return no_braket_tokens
+    
 def evaluate(tokens):
   answer = 0
   tokens.insert(0, {'type': 'PLUS'}) # Insert a dummy '+' token
+  tokens = process_braket(tokens)
   calc_mul_divide(tokens)
   index = 1
   while index < len(tokens):
@@ -129,6 +154,11 @@ def run_test():
   test("1+3/2-0.5")
   test("2*3*4/5/6")
   test("3.0+4*2-1/5")
+  test("(1+2)")
+  test("3*(1+2)")
+  test("3.0/(2.0+1)")
+  # test("3*(1+1)+4/(3-1)") # :(
+  # test("(3+4*(3-2))/5") # :(
   print("==== Test finished! ====\n")
 
 run_test()
