@@ -1,6 +1,6 @@
 # class3
 
-プログラムは`modularized_calculator.py`である。
+プログラムは[`modularized_calculator.py`](https://github.com/Gyuchan3/STEP2021/blob/main/class3/modularized_calculator.py)である。
 
 ## 実行方法
 
