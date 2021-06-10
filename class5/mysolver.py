@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from os import path
 import sys
 import math
 import random
@@ -43,13 +44,13 @@ def generate_greedy_tour(N, dist):
 def swap_cross(cities, dist, N):
     tour = generate_greedy_tour(N, dist)
     # ランダムに入れ替える(greedyのままだと局所最適解にはまる気がしたので)
-    for i in range(N // 5):
+    for i in range(N // 10 + 1):
         r1 = random.randint(0, N - 1)
         r2 = random.randint(0, N - 1)
         tour[r1], tour[r2] = tour[r2], tour[r1]
         
     # tour = generate_random_tour(N)
-    step = 10**4
+    step = 10**3
     for i in range(step):
         # 入れ替え候補の2点をランダムに選ぶ
         r1 = random.randint(0, N - 1)
@@ -83,8 +84,8 @@ def solve(cities):
             dist[i][j] = dist[j][i] = distance(cities[i], cities[j])
 
     step = 100
-    ans_tour = []
-    ans_path_length = 10**8
+    ans_tour = generate_greedy_tour(N, dist)
+    ans_path_length = sum(distance(cities[ans_tour[i]], cities[ans_tour[(i + 1) % N]]) for i in range(N))
     
     for i in range(step):
         tour, path_length = swap_cross(cities, dist, N)
@@ -108,3 +109,4 @@ if __name__ == '__main__':
     assert len(sys.argv) > 1
     tour = solve(read_input(sys.argv[1]))
     print_tour(tour)
+    
