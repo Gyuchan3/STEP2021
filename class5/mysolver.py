@@ -50,7 +50,7 @@ def swap_cross(cities, dist, N):
         tour[r1], tour[r2] = tour[r2], tour[r1]
         
     # tour = generate_random_tour(N)
-    step = 10**3
+    step = 10**6
     for i in range(step):
         # 入れ替え候補の2点をランダムに選ぶ
         r1 = random.randint(0, N - 1)
@@ -62,7 +62,7 @@ def swap_cross(cities, dist, N):
         # r1―(r1 + 1) % Nと(r2 - 1 + N) % N―r2が交差している時
         #(r1 + 1) % Nはr1の一つ先。r1 = N - 1のときr1の一つ先が0になる
         #(r2 - 1 + N) % Nはr2の一つ前。r2 = 0のときr2の一つ前がN-1になる
-        if (dist[tour[r1]][tour[(r1 + 1) % N]] + dist[tour[r2]][tour[(r2 - 1 + N) % N]]) > (dist[tour[r1]][tour[r2]] + dist[tour[(r1 + 1)] % N][tour[(r2 - 1 + N) % N]]):
+        if (dist[tour[r1]][tour[(r1 + 1) % N]] + dist[tour[r2]][tour[(r2 - 1 + N) % N]]) > (dist[tour[r1]][tour[(r2 - 1 + N) % N]] + dist[tour[r2][tour(r1 + 1) % N]]):
             # r1とr2の間を逆向きにする
             while True:
                 r1 = (r1 + 1) % N
