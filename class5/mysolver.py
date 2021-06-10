@@ -92,16 +92,7 @@ def solve(cities):
         if path_length < ans_path_length:
             ans_tour = tour
             ans_path_length = path_length
-    # current_city = 0
-    # unvisited_cities = set(range(1, N))
-    # tour = [current_city]
-
-    # while unvisited_cities:
-    #     next_city = min(unvisited_cities,
-    #                     key=lambda city: dist[current_city][city])
-    #     unvisited_cities.remove(next_city)
-    #     tour.append(next_city)
-    #     current_city = next_city
+            
     return ans_tour
 
 
