@@ -41,28 +41,29 @@ def generate_greedy_tour(N, dist):
     return tour
         
 # 2-opt
-def swap_cross(cities, dist, tour, N):
-    # tour = generate_greedy_tour(N, dist) #これ毎回計算するの時間がもったいない
+def swap_cross(cities, dist, N):
+    tour = generate_greedy_tour(N, dist) # 毎回計算するの時間の無駄
     # ランダムに入れ替える(greedyのままだと局所最適解にはまる気がしたので)
-    for i in range(N // 100 + 1):
+    for i in range(N // 10 + 1):
         r1 = random.randint(0, N - 1)
         r2 = random.randint(0, N - 1)
         tour[r1], tour[r2] = tour[r2], tour[r1]
         
     # tour = generate_random_tour(N)
-    step = 10**4
+    step = 10**3
     for i in range(step):
         # 入れ替え候補の2点をランダムに選ぶ
         r1 = random.randint(0, N - 1)
         r2 = random.randint(0, N - 1)
         
         if r1 > r2: r1, r2 = r2, r1 #r1 < r2にする
-        if (r2 - r1) <= 2: continue #絶対に交差しない
+        if r2 - r1 <= 2:
+            continue #絶対に交差しない
         
         # r1―(r1 + 1) % Nと(r2 - 1 + N) % N―r2が交差している時
         #(r1 + 1) % Nはr1の一つ先。r1 = N - 1のときr1の一つ先が0になる
         #(r2 - 1 + N) % Nはr2の一つ前。r2 = 0のときr2の一つ前がN-1になる
-        if (dist[tour[r1]][tour[(r1 + 1) % N]] + dist[tour[r2]][tour[(r2 - 1 + N) % N]]) > (dist[tour[r1]][tour[(r2 - 1 + N) % N]] + dist[tour[r2][tour(r1 + 1) % N]]):
+        if (dist[tour[r1]][tour[(r1 + 1) % N]] + dist[tour[r2]][tour[(r2 - 1 + N) % N]]) > (dist[tour[r1]][tour[(r2 - 1 + N) % N]] + dist[tour[r2]][tour[(r1 + 1) % N]]):
             # r1とr2の間を逆向きにする
             while True:
                 r1 = (r1 + 1) % N
@@ -83,12 +84,12 @@ def solve(cities):
         for j in range(i, N):
             dist[i][j] = dist[j][i] = distance(cities[i], cities[j])
 
-    step = 10**4
+    step = 100
     ans_tour = generate_greedy_tour(N, dist)
     ans_path_length = sum(distance(cities[ans_tour[i]], cities[ans_tour[(i + 1) % N]]) for i in range(N))
     
     for i in range(step):
-        tour, path_length = swap_cross(cities, dist, ans_tour, N)
+        tour, path_length = swap_cross(cities, dist, N)
         if path_length < ans_path_length:
             ans_tour = tour
             ans_path_length = path_length
