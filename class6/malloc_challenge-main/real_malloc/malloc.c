@@ -74,7 +74,7 @@ typedef struct my_metadata_t {
 // The global information of the my malloc.
 //   *  |free_head| points to the first free slot.
 //   *  |dummy| is a dummy free slot (only used to make the free list
-//      implementation myr).
+//      implementation simpler).
 typedef struct my_heap_t {
   my_metadata_t *free_head;
   my_metadata_t dummy;
@@ -91,7 +91,7 @@ void my_add_to_free_list(my_metadata_t *metadata) {
 
 // Remove a free slot from the free list.
 void my_remove_from_free_list(my_metadata_t *metadata,
-                                  my_metadata_t *prev) {
+                              my_metadata_t *prev) {
   if (prev) {
     prev->next = metadata->next;
   } else {
@@ -116,11 +116,44 @@ void *my_malloc(size_t size) {
   // Implement here!
   my_metadata_t *metadata = my_heap.free_head;
   my_metadata_t *prev = NULL;
+
   // First-fit: Find the first free slot the object fits.
-  while (metadata && metadata->size < size) {
+  // while (metadata && metadata->size < size) {
+  //   prev = metadata;
+  //   metadata = metadata->next;
+  // }
+
+  // // Best-fit
+  // size_t min_size = 4096;
+  // my_metadata_t *tmp_metadata = NULL;
+  // my_metadata_t *tmp_prev = NULL;
+  // while (metadata){
+  //   if (metadata->size >= size && metadata->size < min_size){
+  //     tmp_metadata = metadata;
+  //     tmp_prev = prev;
+  //     min_size = metadata->size;
+  //   }
+  //   prev = metadata;
+  //   metadata = metadata->next;
+  // }
+  // metadata = tmp_metadata;
+  // prev = tmp_prev;
+
+  // Worst-fit
+  size_t max_size = 0;
+  my_metadata_t *tmp_metadata = NULL;
+  my_metadata_t *tmp_prev = NULL;
+  while (metadata){
+    if (metadata->size >= size && metadata->size > max_size){
+      tmp_metadata = metadata;
+      tmp_prev = prev;
+      max_size = metadata->size;
+    }
     prev = metadata;
     metadata = metadata->next;
   }
+  metadata = tmp_metadata;
+  prev = tmp_prev;
 
   if (!metadata) {
     // There was no free slot available. We need to request a new memory region
