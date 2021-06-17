@@ -26,7 +26,7 @@
 //      memory region as much as possible.
 //   *  munmap_to_system(ptr, size) frees the memory region [ptr, ptr + size)
 //      to the system. |ptr| and |size| need to be a multiple of 4096 bytes.
-//      You are expected to free memory regions that are unused.
+//      You are expected to free memory regions that are unused.                                         
 //   *  You are NOT allowed to use any other library functions at all, including
 //      the default malloc() / free(), std:: libraries etc. This is because you
 //      are implementing malloc itself -- if you use something that may use
@@ -82,11 +82,32 @@ typedef struct my_heap_t {
 
 my_heap_t my_heap;
 
+void my_remove_from_free_list(my_metadata_t *metadata, my_metadata_t *prev);
+
 // Add a free slot to the beginning of the free list.
 void my_add_to_free_list(my_metadata_t *metadata) {
   assert(!metadata->next);
   metadata->next = my_heap.free_head;
   my_heap.free_head = metadata;
+
+  // merge the right side
+  // ... | metadata | object | metadata |...
+  //     ^          ^        ^
+  //     metadata metadata+1 next_metadata
+ 
+  // my_metadata_t *next_metadata = (my_metadata_t *)((char *)(metadata + 1) + metadata->size);
+  // my_metadata_t *search = my_heap.free_head;
+  // my_metadata_t *prev = NULL;
+  // while (search){
+  //   if (search == next_metadata){
+  //     metadata->size += sizeof(my_metadata_t) + search->size;
+  //     my_remove_from_free_list(search, prev);
+  //     // metadata->size = merge_size;
+  //     break;
+  //   }
+  //   prev = search;
+  //   search = search->next;
+  // } 
 }
 
 // Remove a free slot from the free list.
@@ -118,42 +139,38 @@ void *my_malloc(size_t size) {
   my_metadata_t *prev = NULL;
 
   // First-fit: Find the first free slot the object fits.
-  // while (metadata && metadata->size < size) {
-  //   prev = metadata;
-  //   metadata = metadata->next;
-  // }
+  while (metadata && metadata->size < size) {
+    prev = metadata;
+    metadata = metadata->next;
+  }
 
-  // // Best-fit
-  // size_t min_size = 4096;
-  // my_metadata_t *tmp_metadata = NULL;
-  // my_metadata_t *tmp_prev = NULL;
+  // Best-fit
+  // First-fitで見つけた値を仮の最適位置とする
+  my_metadata_t *tmp_metadata = metadata;
+  my_metadata_t *tmp_prev = prev;
+
+  while (metadata){
+    if (metadata->size >= size && metadata->size < tmp_metadata->size){
+      tmp_metadata = metadata;
+      tmp_prev = prev;
+    }
+    prev = metadata;
+    metadata = metadata->next;
+  } 
+  metadata = tmp_metadata;
+  prev = tmp_prev;
+
+  // // Worst-fit
   // while (metadata){
-  //   if (metadata->size >= size && metadata->size < min_size){
+  //   if (metadata->size >= size && metadata->size > tmp_metadata->size){
   //     tmp_metadata = metadata;
   //     tmp_prev = prev;
-  //     min_size = metadata->size;
   //   }
   //   prev = metadata;
   //   metadata = metadata->next;
   // }
   // metadata = tmp_metadata;
   // prev = tmp_prev;
-
-  // Worst-fit
-  size_t max_size = 0;
-  my_metadata_t *tmp_metadata = NULL;
-  my_metadata_t *tmp_prev = NULL;
-  while (metadata){
-    if (metadata->size >= size && metadata->size > max_size){
-      tmp_metadata = metadata;
-      tmp_prev = prev;
-      max_size = metadata->size;
-    }
-    prev = metadata;
-    metadata = metadata->next;
-  }
-  metadata = tmp_metadata;
-  prev = tmp_prev;
 
   if (!metadata) {
     // There was no free slot available. We need to request a new memory region
@@ -165,8 +182,7 @@ void *my_malloc(size_t size) {
     //     <---------------------->
     //            buffer_size
     size_t buffer_size = 4096;
-    my_metadata_t *metadata =
-        (my_metadata_t *)mmap_from_system(buffer_size);
+    my_metadata_t *metadata = (my_metadata_t *)mmap_from_system(buffer_size);
     metadata->size = buffer_size - sizeof(my_metadata_t);
     metadata->next = NULL;
     // Add the memory region to the free list.
@@ -201,7 +217,6 @@ void *my_malloc(size_t size) {
     my_add_to_free_list(new_metadata);
   }
   return ptr;
-  // return mmap_from_system(4096);
 }
 
 // my_free() is called every time an object is freed.  You are not allowed to
@@ -216,7 +231,6 @@ void my_free(void *ptr) {
   my_metadata_t *metadata = (my_metadata_t *)ptr - 1;
   // Add the free slot to the free list.
   my_add_to_free_list(metadata);
-  // munmap_to_system(ptr, 4096);
 }
 
 void my_finalize() {
