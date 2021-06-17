@@ -90,23 +90,23 @@ void my_add_to_free_list(my_metadata_t *metadata) {
   metadata->next = my_heap.free_head;
   my_heap.free_head = metadata;
 
-  // merge the right side
-  // ... | metadata | object | metadata |...
-  //     ^          ^        ^
-  //     metadata metadata+1 next_metadata
-  my_metadata_t *next_metadata = (my_metadata_t *)((char *)(metadata + 1) + metadata->size);
-  my_metadata_t *search = my_heap.free_head;
-  my_metadata_t *prev = NULL;
-  while (search){
-    if (search == next_metadata){
-      metadata->size += sizeof(my_metadata_t) + search->size;
-      my_remove_from_free_list(search, prev);
-      // metadata->size = merge_size;
-      break;
-    }
-    prev = search;
-    search = search->next;
-  } 
+  // // merge the right side
+  // // ... | metadata | object | metadata |...
+  // //     ^          ^        ^
+  // //     metadata metadata+1 next_metadata
+  // my_metadata_t *next_metadata = (my_metadata_t *)((char *)(metadata + 1) + metadata->size);
+  // my_metadata_t *search = my_heap.free_head;
+  // my_metadata_t *prev = NULL;
+  // while (search){
+  //   if (search == next_metadata){
+  //     metadata->size += sizeof(my_metadata_t) + search->size;
+  //     my_remove_from_free_list(search, prev);
+  //     // metadata->size = merge_size;
+  //     break;
+  //   }
+  //   prev = search;
+  //   search = search->next;
+  // } 
 }
 
 // Remove a free slot from the free list.
@@ -231,6 +231,23 @@ void my_free(void *ptr) {
   //     ^          ^
   //     metadata   ptr
   my_metadata_t *metadata = (my_metadata_t *)ptr - 1;
+  
+  // merge the right side
+  // ... | metadata | object | metadata |...
+  //     ^          ^        ^
+  //     metadata  ptr   next_metadata
+  my_metadata_t *next_metadata = (my_metadata_t *)((char *)ptr + metadata->size);
+  my_metadata_t *search = my_heap.free_head;
+  my_metadata_t *prev = NULL;
+  while (search){
+    if (search == next_metadata){
+      metadata->size += sizeof(my_metadata_t) + search->size;
+      my_remove_from_free_list(search, prev);
+      break;
+    }
+    prev = search;
+    search = search->next;
+  } 
   // Add the free slot to the free list.
   my_add_to_free_list(metadata);
 }
