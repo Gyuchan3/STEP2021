@@ -94,20 +94,19 @@ void my_add_to_free_list(my_metadata_t *metadata) {
   // ... | metadata | object | metadata |...
   //     ^          ^        ^
   //     metadata metadata+1 next_metadata
- 
-  // my_metadata_t *next_metadata = (my_metadata_t *)((char *)(metadata + 1) + metadata->size);
-  // my_metadata_t *search = my_heap.free_head;
-  // my_metadata_t *prev = NULL;
-  // while (search){
-  //   if (search == next_metadata){
-  //     metadata->size += sizeof(my_metadata_t) + search->size;
-  //     my_remove_from_free_list(search, prev);
-  //     // metadata->size = merge_size;
-  //     break;
-  //   }
-  //   prev = search;
-  //   search = search->next;
-  // } 
+  my_metadata_t *next_metadata = (my_metadata_t *)((char *)(metadata + 1) + metadata->size);
+  my_metadata_t *search = my_heap.free_head;
+  my_metadata_t *prev = NULL;
+  while (search){
+    if (search == next_metadata){
+      metadata->size += sizeof(my_metadata_t) + search->size;
+      my_remove_from_free_list(search, prev);
+      // metadata->size = merge_size;
+      break;
+    }
+    prev = search;
+    search = search->next;
+  } 
 }
 
 // Remove a free slot from the free list.
@@ -161,6 +160,9 @@ void *my_malloc(size_t size) {
   prev = tmp_prev;
 
   // // Worst-fit
+  // First-fitで見つけた値を仮の最適位置とする
+  // my_metadata_t *tmp_metadata = metadata;
+  // my_metadata_t *tmp_prev = prev;
   // while (metadata){
   //   if (metadata->size >= size && metadata->size > tmp_metadata->size){
   //     tmp_metadata = metadata;
