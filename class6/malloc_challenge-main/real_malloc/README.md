@@ -1,4 +1,27 @@
-# 結果
+## 作成したコード
++ [`malloc.c`](https://github.com/Gyuchan3/STEP2021/blob/main/class6/malloc_challenge-main/real_malloc/main.c) : Best-fitでmallocして、freeするときに右側が空き領域なら統合する。`my_malloc.c`のコメントの範囲を変えるとFirst-fit, Worst-fitでも実行できる。
++ [`first_fit.c`](https://github.com/Gyuchan3/STEP2021/blob/main/class6/malloc_challenge-main/real_malloc/first_fit.c) : sample_malloc.cの内容を写したもの。
++ [`best_fit.c`](https://github.com/Gyuchan3/STEP2021/blob/main/class6/malloc_challenge-main/real_malloc/best_fit.c) : Best-fit
++ [`worst_fit.c`](https://github.com/Gyuchan3/STEP2021/blob/main/class6/malloc_challenge-main/real_malloc/worst_fit.c) : Worst-fit
++ [`merge.c`](https://github.com/Gyuchan3/STEP2021/blob/main/class6/malloc_challenge-main/real_malloc/merge.c) : freeする領域の両側が空き領域かを考慮する。
+
+## 実行方法
+
+以下のコマンドを実行する。
++ malloc.c
+
+  ```
+  make
+  make run
+  ```
++ その他
+
+  ```
+  gcc -O3 -o malloc_challenge.bin main.c <ファイル名> simple_malloc.c -lm
+  ./malloc_challenge.bin
+  ```
+
+## 結果
 simple malloc => my malloc
 
 |           | Challenge 1 | Challenge 2 | Challenge 3 | Challenge 4 | Challenge 5 | 
@@ -6,7 +29,7 @@ simple malloc => my malloc
 | First-fIt | Time: 13 ms => 12 ms<br>Utilization: 70% => 70% | Time: 11 ms => 11 ms<br>Utilization: 40% => 39% | Time: 134 ms => 134 ms<br>Utilization: 7% => 7% | Time: 25045 ms => 25758 ms<br>Utilization: 16% => 15% | Time: 19133 ms => 18935 ms<br>Utilization: 15% => 14% | 
 | Best-fit  | Time: 16 ms => 1475 ms<br>Utilization: 70% => 70%|Time: 11 ms => 610 ms<br>Utilization: 40% => 39%|Time: 135 ms => 948 ms<br>Utilization: 7% => 50%|Time: 25041 ms => 10290 ms<br>Utilization: 16% => 71%|Time: 24354 ms => 7163 ms<br>Utilization: 15% => 71%|
 | Worst-fit | Time: 17 ms => 1592 ms<br>Utilization: 70% => 70%|Time: 11 ms => 773 ms<br>Utilization: 40% => 39%|Time: 133 ms => 65248 ms<br>Utilization: 7% => 3%|Time: 19647 ms => 681385 ms<br>Utilization: 16% => 7%|Time: 15321 ms => 579671 ms<br>Utilization: 15% => 7%|
-|merge-left| Time: 19 ms => 1164 ms<br>Utilization: 70% => 70%|Time: 11 ms => 566 ms<br>Utilization: 40% => 39%|Time: 134 ms => 942 ms<br>Utilization: 7% => 48%|Time: 19113 ms => 2465 ms<br>Utilization: 16% => 76%|Time: 18076 ms => 2467 ms<br>Utilization: 15% => 75%
+|merge-left<br>(Best-fit)| Time: 19 ms => 1164 ms<br>Utilization: 70% => 70%|Time: 11 ms => 566 ms<br>Utilization: 40% => 39%|Time: 134 ms => 942 ms<br>Utilization: 7% => 48%|Time: 19113 ms => 2465 ms<br>Utilization: 16% => 76%|Time: 18076 ms => 2467 ms<br>Utilization: 15% => 75%
 
 
 
