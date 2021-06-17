@@ -1,5 +1,5 @@
 ## 作成したコード
-+ [`malloc.c`](https://github.com/Gyuchan3/STEP2021/blob/main/class6/malloc_challenge-main/real_malloc/main.c) : Best-fitでmallocして、freeするときに右側が空き領域なら統合する。`my_malloc.c`のコメントの範囲を変えるとFirst-fit, Worst-fitでも実行できる。
++ [`malloc.c`](https://github.com/Gyuchan3/STEP2021/blob/main/class6/malloc_challenge-main/real_malloc/malloc.c) : Best-fitでmallocして、freeするときに右側が空き領域なら統合する。`my_malloc.c`のコメントの範囲を変えるとFirst-fit, Worst-fitでも実行できる。
 + [`first_fit.c`](https://github.com/Gyuchan3/STEP2021/blob/main/class6/malloc_challenge-main/real_malloc/first_fit.c) : sample_malloc.cの内容を写したもの。
 + [`best_fit.c`](https://github.com/Gyuchan3/STEP2021/blob/main/class6/malloc_challenge-main/real_malloc/best_fit.c) : Best-fit
 + [`worst_fit.c`](https://github.com/Gyuchan3/STEP2021/blob/main/class6/malloc_challenge-main/real_malloc/worst_fit.c) : Worst-fit
