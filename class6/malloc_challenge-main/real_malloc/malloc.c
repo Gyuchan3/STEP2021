@@ -31,7 +31,7 @@
 //      the default malloc() / free(), std:: libraries etc. This is because you
 //      are implementing malloc itself -- if you use something that may use
 //      malloc internally, it will result in an infinite recurion.
-// 3. simple_malloc(), simple_free() and simple_initialize() in my_malloc.c
+// 3. simple_malloc(), simple_free() and simple_initialize() in sample_malloc.c
 //    are an example of straightforward implementation.
 //    Your job is to invent a smarter malloc algorithm than the simple malloc.
 // 4. There are five challenges (Challenge 1, 2, 3, 4 and 5). Each challenge
@@ -82,31 +82,11 @@ typedef struct my_heap_t {
 
 my_heap_t my_heap;
 
-void my_remove_from_free_list(my_metadata_t *metadata, my_metadata_t *prev);
-
 // Add a free slot to the beginning of the free list.
 void my_add_to_free_list(my_metadata_t *metadata) {
   assert(!metadata->next);
   metadata->next = my_heap.free_head;
   my_heap.free_head = metadata;
-
-  // // merge the right side
-  // // ... | metadata | object | metadata |...
-  // //     ^          ^        ^
-  // //     metadata metadata+1 next_metadata
-  // my_metadata_t *next_metadata = (my_metadata_t *)((char *)(metadata + 1) + metadata->size);
-  // my_metadata_t *search = my_heap.free_head;
-  // my_metadata_t *prev = NULL;
-  // while (search){
-  //   if (search == next_metadata){
-  //     metadata->size += sizeof(my_metadata_t) + search->size;
-  //     my_remove_from_free_list(search, prev);
-  //     // metadata->size = merge_size;
-  //     break;
-  //   }
-  //   prev = search;
-  //   search = search->next;
-  // } 
 }
 
 // Remove a free slot from the free list.
@@ -231,20 +211,30 @@ void my_free(void *ptr) {
   //     ^          ^
   //     metadata   ptr
   my_metadata_t *metadata = (my_metadata_t *)ptr - 1;
-  
-  // merge the right side
+
+  // merge the right side (and left side)
   // ... | metadata | object | metadata |...
   //     ^          ^        ^
   //     metadata  ptr   next_metadata
   my_metadata_t *next_metadata = (my_metadata_t *)((char *)ptr + metadata->size);
   my_metadata_t *search = my_heap.free_head;
   my_metadata_t *prev = NULL;
+  // my_metadata_t *two_prev = NULL;
   while (search){
-    if (search == next_metadata){
+    if (search == next_metadata){ // merge right
       metadata->size += sizeof(my_metadata_t) + search->size;
       my_remove_from_free_list(search, prev);
       break;
     }
+    // if (search == metadata){ // merge left??
+    //   prev->size += sizeof(my_metadata_t) + metadata->size;
+    //   my_remove_from_free_list(prev, two_prev);
+    //   metadata = prev;
+    //   prev = two_prev;
+    //   search = search->next;
+    //   continue;
+    // }
+    // two_prev = prev;
     prev = search;
     search = search->next;
   } 
