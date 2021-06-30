@@ -5,10 +5,6 @@
 #include <math.h>
 #include <time.h>
 #include <assert.h>
-// void die(char *s){
-//   perror(s);
-//   exit(1);
-// }
 
 // 町の構造体
 typedef struct{
@@ -27,7 +23,6 @@ double dist(const City *city, const int *tour, const int i, const int j);
 double calc_path_length(const City *cities, const int n, const int tour[n]);
 City *read_input(const char *filename, const int n);
 void print_tour(const char *filename, const int n, const int tour[n]);
-void generate_random_tour(const City *cities, const int n, int tour[n]);
 Answer generate_greedy_tour(const City *cities, const int n, const int start);
 Answer two_opt(const City *cities, const int n, int base_tour[n]);
 double solve(const City *cities, const int n, int *tour, const int split);
@@ -90,18 +85,6 @@ void print_tour(const char *filename, const int n, const int tour[n]){
   fclose(fp);
 }
 
-void generate_random_tour(const City *cities, const int n, int tour[n]){
-  for (int i = 0; i < n; ++i){
-    tour[i] = i;
-  }
-  // 100回入れかえる
-  for (int i = 0; i < 100; ++i){
-    int r1 = rand() % (n - 1) + 1;
-    int r2 = rand() % (n - 1) + 1;
-    swap(&tour[r1], &tour[r2]);
-  }
-}
-
 // 貪欲法で初期解を作る。startは開始する町
 Answer generate_greedy_tour(const City *cities, const int n, const int start){
   int tour[n];
@@ -138,9 +121,6 @@ Answer generate_greedy_tour(const City *cities, const int n, const int start){
   return (Answer){.dist = sum_dist, .tour = result_tour};
 }
 
-// Answer two_opt(const City *cities, const int n){
-//   int tour[n];
-//   generate_random_tour(cities, n, tour);
 Answer two_opt(const City *cities, const int n, int base_tour[n]){
   int *tour = (int*)calloc(n, sizeof(int));
   memcpy(tour, base_tour, sizeof(int) * n);
@@ -167,31 +147,8 @@ Answer two_opt(const City *cities, const int n, int base_tour[n]){
     }
     if (count == 0) break;
   }
-  // int step = 10000;
-  // for (int s = 0; s < step; ++s){
-  //   int r1 = rand() % (n-1) + 1;
-  //   int r2 = rand() % (n-1) + 1;
-
-  //   if (r1 > r2) swap(&r1, &r2);
-  //   if ((r2 - r1) <= 2) continue;
-
-  //   int next_r1 = (r1 + 1) % n;
-  //   int prev_r2 = (r2 - 1 + n) % n;
-  //   if ((dist(cities, tour, r1, next_r1) + dist(cities, tour, r2, prev_r2)) > 
-  //       (dist(cities, tour, r1, prev_r2) + dist(cities, tour, r2, next_r1))){
-  //         while(1){
-  //           r1 = (r1 + 1) % n;
-  //           r2 = (r2 - 1 + n) % n;
-  //           swap(&tour[r1], &tour[r2]);
-  //           if (0 <= r2 - r1 && r2 - r1 <= 1) break;
-  //         }
-  //     }
-  // }
 
   double sum_dist = calc_path_length(cities, n, tour);
-  // int *result_tour = (int*)calloc(n, sizeof(int));
-  // memcpy(result_tour, tour, sizeof(int) * n);
-  // return (Answer){.dist = sum_dist, .tour = result_tour};    
   return (Answer){.dist = sum_dist, .tour = tour};    
 }
 
